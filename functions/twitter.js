@@ -1,36 +1,48 @@
 const Twit = require('twit');
-const keys = require('./keys');
 
-module.exports.suspensionCheck = (config, array1, array2) => { // array1 is stored data, array2 is new data
+module.exports.suspensionCheck = (config, data) => {
   const T = new Twit(config);
 
   return new Promise((resolve, reject) => {
-    let unfollowedNames = array1[0].filter(x => !array2[0].includes(x));
-    if (unfollowedNames.length === 0) {
-      reject('No suspended accounts');
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString('en-AM', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+
+    let unfollowedIds = data.storedData.user_id.filter(x => !data.newData.user_id.includes(x));
+
+    if (unfollowedIds.length === 0) {
+      reject(null); // No suspended or deleted accounts
     }
-    let suspendedUsers = [[], [], []]; // screen_names, profile_pics, user_ids
-    let deletedUsers = [[], [], []];
+    let suspendedUsers = [];
+    let deletedUsers = [];
     let i = 0;
-    T.get('users/show', { user_id: array1[2][array1[0].indexOf(unfollowedNames[i])] }, function getData(err) {
+    T.get('users/show', { user_id: unfollowedIds[i] }, function getData(err) {
       if (err) {
         if (err.code === 63) {
-          suspendedUsers[0].push(unfollowedNames[i]);
-          suspendedUsers[1].push(array1[1][array1[0].indexOf(unfollowedNames[i])]);
+          suspendedUsers.push({
+            screen_name: data.storedData.screen_name[data.storedData.user_id.indexOf(unfollowedIds[i])],
+            profile_pic: data.storedData.profile_pic[data.storedData.user_id.indexOf(unfollowedIds[i])],
+            date: formattedDate
+          });
         } else if (err.code === 50) {
-          deletedUsers[0].push(unfollowedNames[i]);
-          deletedUsers[1].push(array1[1][array1[0].indexOf(unfollowedNames[i])]);
+          deletedUsers.push({
+            screen_name: data.storedData.screen_name[data.storedData.user_id.indexOf(unfollowedIds[i])],
+            profile_pic: data.storedData.profile_pic[data.storedData.user_id.indexOf(unfollowedIds[i])],
+            date: formattedDate
+          });
         } else {
           reject(err);
         }
       }
+
       i++;
-      if (i < unfollowedNames.length) {
-        T.get('users/show', { screen_name: unfollowedNames[i] }, getData);
-      } else if (suspendedUsers[0].length > 0 || deletedUsers[0].length > 0) {
-        resolve([suspendedUsers, deletedUsers]);
+      if (i < unfollowedIds.length) {
+        T.get('users/show', { user_id: unfollowedIds[i] }, getData);
+      } else if (suspendedUsers.length > 0 || deletedUsers.length > 0) {
+        resolve({ suspended: suspendedUsers, deleted: deletedUsers });
       } else {
-        reject('No suspended accounts');
+        reject(null); // No suspended or deleted accounts
       }
     })
   })
@@ -43,13 +55,13 @@ module.exports.storeNames = (config, params) => {
     getFriends(params, T).then((data) => {
       let dataChunk = data.chunk(100);
       let i = 0;
-      let friendNamesPics = [[], [], data];
+      let friendNamesPics = { screen_name: [], profile_pic: [], user_id: data };
       T.get('users/lookup', { user_id: dataChunk[i].join(',') }, function getData(err, dat) {
         if (err) {
           reject(err);
         } else {
-          friendNamesPics[0].push(...dat.map(({ screen_name }) => screen_name));
-          friendNamesPics[1].push(...dat.map(({ profile_image_url_https }) => profile_image_url_https));
+          friendNamesPics.screen_name.push(...dat.map(({ screen_name }) => screen_name));
+          friendNamesPics.profile_pic.push(...dat.map(({ profile_image_url_https }) => getLargePic(profile_image_url_https)));
           i++;
           if (i < dataChunk.length) {
             T.get('users/lookup', { user_id: dataChunk[i].join(',') }, getData)
@@ -73,9 +85,13 @@ module.exports.verifyUser = (config) => {
       .then((data) => {
         if (data.resp.statusCode === 200 && !data.data.suspended) {
           resolve({
+            user_id: data.data.id_str,
             name: data.data.name,
             screen_name: data.data.screen_name,
-            friends_count: data.data.friends_count
+            friends_count: numberWithCommas(data.data.friends_count),
+            profile_pic: getLargePic(data.data.profile_image_url_https),
+            profile_banner: data.data.profile_banner_url,
+            statusCode: 200
           })
         } else {
           reject('something wrong (suspended or failed request)')
@@ -87,11 +103,25 @@ module.exports.verifyUser = (config) => {
   })
 };
 
+module.exports.invalidateToken = (config) => {
+  const T = new Twit(config);
+
+  return new Promise((resolve, reject) => {
+    T.post('oauth/invalidate_token')
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject(err)
+      })
+  })
+};
+
 getFriends = (params, twit, friendIDs = []) => {
 
   return new Promise((resolve, reject) => {
     twit.get('friends/ids', {
-      screen_name: params.screen_name,
+      user_id: params.user_id,
       stringify_ids: true
     }, function getData(err, data, response) {
       if (err) {
@@ -100,7 +130,7 @@ getFriends = (params, twit, friendIDs = []) => {
         friendIDs.push(...data.ids);
         if (data['next_cursor'] > 0) {
           twit.get('friends/ids', {
-            screen_name: params.screen_name,
+            user_id: params.user_id,
             stringify_ids: true,
             cursor: data['next_cursor']
           }, getData);
@@ -111,6 +141,16 @@ getFriends = (params, twit, friendIDs = []) => {
     })
   })
 };
+
+function numberWithCommas(number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function getLargePic(picURL) {
+  const splitURL = picURL.split('_normal.');
+  return `${splitURL[0]}_400x400.${splitURL[1]}`
+}
+
 
 Object.defineProperty(Array.prototype, 'chunk', {
   value: function (chunkSize) {

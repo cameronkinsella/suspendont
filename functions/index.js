@@ -8,9 +8,17 @@ const HmacSHA1 = require('crypto-js/hmac-sha1');
 const Base64 = require('crypto-js/enc-base64');
 
 const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 const friends = require('./twitter');
 const keys = require('./keys');
 
+
+admin.initializeApp({
+  credential: admin.credential.cert(keys.serviceAccount),
+  databaseURL: keys.databaseURL
+});
+
+let db = admin.firestore();
 
 const app = express();
 
@@ -93,50 +101,8 @@ app.post('/auth/access_token', async (req, res) => {
 });
 
 
-app.post('/twitter/names', (req, res) => {
-  const config = {
-    consumer_key: keys.consumer_key,
-    consumer_secret: keys.consumer_secret,
-    access_token: req.body.token,
-    access_token_secret: req.body.token_secret
-  };
-
-  friends.storeNames(config, { screen_name: req.body.screen_name })
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
-      console.log(err)
-    });
-});
-
-
-app.post('/twitter/suspended', (req, res) => {
-  const config = {
-    consumer_key: keys.consumer_key,
-    consumer_secret: keys.consumer_secret,
-    access_token: req.body.token,
-    access_token_secret: req.body.token_secret
-  };
-
-  friends.storeNames(config, { screen_name: req.body.screen_name })
-    .then((data) => {
-      friends.suspensionCheck(config, req.body.stored_data, data)
-        .then((data) => {
-          res.send(data)
-        })
-        .catch((err) => {
-          res.send(err)
-        });
-    })
-    .catch((err) => {
-      res.send(err);
-      console.log(err)
-    });
-});
-
 app.post('/auth/verify', (req, res) => {
+
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
@@ -146,7 +112,7 @@ app.post('/auth/verify', (req, res) => {
 
   friends.verifyUser(config)
     .then((data) => {
-      res.send(data)
+      res.json(qs.parse(data))
     })
     .catch((err) => {
       res.send(err);
@@ -154,4 +120,110 @@ app.post('/auth/verify', (req, res) => {
     })
 });
 
+app.post('/auth/invalidate_token', (req, res) => {
+
+  const config = {
+    consumer_key: keys.consumer_key,
+    consumer_secret: keys.consumer_secret,
+    access_token: req.body.token,
+    access_token_secret: req.body.token_secret
+  };
+
+  friends.invalidateToken(config)
+    .then((data) => {
+      res.json({ statusCode: data.resp.statusCode })
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err)
+    })
+});
+
+app.post('/twitter/suspended', (req, res) => {
+
+  const config = {
+    consumer_key: keys.consumer_key,
+    consumer_secret: keys.consumer_secret,
+    access_token: req.body.token,
+    access_token_secret: req.body.token_secret
+  };
+
+  friends.storeNames(config, { user_id: req.body.user_id })
+    .then((data) => {
+      //console.log(req.body.stored_data)
+      const docRef = db.collection('users').doc(req.body.user_id);
+      const getDoc = docRef.get()
+        .then((doc) => {
+          if (!doc.exists) {
+            const setData = docRef.set({
+              screen_name: data.screen_name,
+              profile_pic: data.profile_pic,
+              user_id: data.user_id
+            });
+          } else {
+            friends.suspensionCheck(config, { storedData: doc.data(), newData: data })
+              .then((data) => {
+                res.json(qs.parse(data));
+                const setData = docRef.set({
+                  screen_name: data.screen_name,
+                  profile_pic: data.profile_pic,
+                  user_id: data.user_id
+                });
+              })
+              .catch((err) => {
+                res.json(err)
+              });
+          }
+        })
+        .catch((err) => {
+          res.send(qs.parse(err));
+          console.log(err)
+        });
+    }).catch((err) => {
+    console.log(err)
+  })
+});
+
 exports.app = functions.https.onRequest(app);
+
+
+/*
+app.post('/twitter/names', (req, res) => {
+
+  const config = {
+    consumer_key: keys.consumer_key,
+    consumer_secret: keys.consumer_secret,
+    access_token: req.body.token,
+    access_token_secret: req.body.token_secret
+  };
+
+  friends.storeNames(config, { screen_name: req.body.screen_name })
+    .then((data) => {
+
+      const docRef = db.collection('users').doc(req.body.screen_name);
+
+      const setData = docRef.set({
+        screen_name: data.screen_name,
+        profile_pic: data.profile_pic,
+        user_id: data.user_id
+      });
+
+      db.collection('users').get()
+        .then((snapshot) => {
+          snapshot.forEach((doc) => {
+            console.log(doc.id, '=>', doc.data());
+          });
+        })
+        .catch((err) => {
+          console.log('Error getting documents', err);
+        });
+
+
+      res.json(qs.parse(data))
+    })
+    .catch((err) => {
+      res.send(err);
+      console.log(err)
+    });
+});
+*/
