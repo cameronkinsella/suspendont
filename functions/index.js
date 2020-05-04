@@ -10,7 +10,7 @@ const Base64 = require('crypto-js/enc-base64');
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const friends = require('./twitter');
-const keys = require('./keys');
+const keys = require('./keys.json');
 
 
 admin.initializeApp({
