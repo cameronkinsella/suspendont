@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
 import {
   StyleSheet,
   View,
@@ -111,6 +112,8 @@ function handleLogoutPress(navigator) {
       {
         text: 'Yes', onPress: async () => {
           await getInvalidateToken();
+          await SecureStore.deleteItemAsync('token');
+          await SecureStore.deleteItemAsync('token_secret');
           navigator.navigate('Auth')
         }
 
