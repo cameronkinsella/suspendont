@@ -7,7 +7,7 @@ import LoginButton from '../components/LoginButton'
 export default function LoginScreen() {
 
   useEffect(() => {
-    //Storage.multiRemove(['screen_name']).then() // No longer needed ?
+    //Storage.multiRemove(['token', 'token_secret']).then(); // No longer needed ?
   });
 
   return (

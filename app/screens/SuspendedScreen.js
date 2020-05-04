@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, View, } from 'react-native';
+import { AsyncStorage, Image, ScrollView, StyleSheet, Text, View, } from 'react-native';
 import { Card, ListItem } from 'react-native-elements'
 
 import Storage from '../functions/Storage';
@@ -8,8 +8,9 @@ import Colors from '../constants/Colors';
 import Font from '../constants/FontSizes';
 
 // TODO make cards interactive
-// TODO uncomment code in index to add to db
 // TODO fonts
+// TODO fix unhandled promise rejection when exiting login window
+// TODO change primary to Twitter blue
 
 //import { MonoText } from '../components/StyledText';
 
@@ -100,3 +101,20 @@ const text = StyleSheet.create({
         date: 'Jan 26, 2020'
       }
     ]);*/
+/*
+        let x = data;
+        x[profile.user_id] = [
+          {
+          "date": "Feb 01, 2020",
+          "profile_pic": "https://pbs.twimg.com/profile_images/1206611608803266569/OqKko965_400x400.jpg",
+          "screen_name": "mamerakkkkko",
+        },
+          {
+            "date": "Feb 02, 2020",
+            "profile_pic": "https://pbs.twimg.com/profile_images/1202295575338614784/yv0HQmBY_400x400.jpg",
+            "screen_name": "soraayumu3",
+          }
+        ];
+
+        Storage.setItem('suspended', x);
+ */
