@@ -1,11 +1,11 @@
 .app {
-    background-color: #cccccc;
+    background-color: #ffffff;
     display: flex;
     flex-direction: row;
 }
 
 .sidebar {
-    width: 100px;
+    width: 60px;
     height: 100vh;
     overflow: hidden;
     background-color: #1B2938;
@@ -18,7 +18,7 @@
 .columns {
     display: flex;
     flex: 1;
-    height: 100%;
+    height: 100vh;
     flex-direction: row;
     justify-content: center;
     align-items: center;
@@ -37,6 +37,8 @@
     width: 50%;
     height: 100%;
     text-align: center;
+    border: solid #e1e8ed;
+    border-width: 0 2px 0 4px;
 }
 
 .Deleted {
@@ -46,13 +48,18 @@
     width: 50%;
     height: 100%;
     text-align: center;
+    border: solid #e1e8ed;
+    border-width: 0 4px 0 2px;
 }
 
-.v1 {
-    height: 500px;
-    color: #e1e8ed;
-    border-right: 6px #e1e8ed;
-}
+.p {
+    border: solid #e1e8ed;
+    border-width: 2px 0 2px 0;
+    padding: 10px 0 10px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #38444D;
 
+}
 /* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */
 /* #e1e8ed seperator color */

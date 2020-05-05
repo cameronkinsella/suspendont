@@ -12,16 +12,16 @@ function App() {
       </div>
       <div className="columns">
         <div className="Suspended">
-          <p>
+          <div className="p">
             Suspended
-          </p>
+          </div>
         </div>
 
 
         <div className="Deleted">
-          <p>
+          <div className="p">
             Deleted
-          </p>
+          </div>
         </div>
       </div>
     </div>
