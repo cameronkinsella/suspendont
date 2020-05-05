@@ -1,38 +1,57 @@
-.App {
-  text-align: center;
+.app {
+    background-color: #cccccc;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.sidebar {
+    height: 100%;
+    width: 4%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #1B2938;
+    padding-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.Twitter {
+    color: #2f95dc;
+    position: relative;
+    font-size: 1.5em;
+
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.headerSuspended {
 }
 
-.App-link {
-  color: #61dafb;
+.Suspended {
+    height: 100%;
+    width: 50%;
+    
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.headerDeleted {
+
 }
+
+.Deleted {
+    height: 100%;
+
+
+}
+
+.v1 {
+    height: 500px;
+    color: #e1e8ed;
+    border-right: 6px #e1e8ed;
+}
+
+/* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */
+/* #e1e8ed seperator color */
