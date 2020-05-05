@@ -2,18 +2,12 @@
     background-color: #cccccc;
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
-
 }
 
 .sidebar {
-    height: 100%;
-    width: 4%;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
+    width: 100px;
+    height: 100vh;
+    overflow: hidden;
     background-color: #1B2938;
     padding-top: 20px;
     display: flex;
@@ -21,30 +15,37 @@
     justify-content: center;
 }
 
+.columns {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
 .Twitter {
     color: #2f95dc;
     position: relative;
     font-size: 1.5em;
-
-}
-
-.headerSuspended {
 }
 
 .Suspended {
-    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 50%;
-    
-}
-
-.headerDeleted {
-
+    height: 100%;
+    text-align: center;
 }
 
 .Deleted {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 50%;
     height: 100%;
-
-
+    text-align: center;
 }
 
 .v1 {
