@@ -1,7 +1,22 @@
+@keyframes spin{
+    0%{
+        transform: rotateZ(0);
+    }
+    100% {
+        transform: rotateZ(360deg);
+    }
+}
+
 .app {
     background-color: #ffffff;
+    transition: background-color 0.25s ease-out;
     display: flex;
     flex-direction: row;
+}
+.dark-mode {
+    background-color: #10171e;
+    transition: background-color 0.25s ease-in;
+    color: #e1e8ed;
 }
 
 .sidebar {
@@ -33,14 +48,12 @@
 }
 
 .cog {
-    color: #2f95dc;
-    font-size: 1.5em;
-    position: absolute;
-    bottom: 20px;
+
 }
 
 .cog:hover {
-    opacity: 50%;
+    color: #91DCF5;
+    animation: spin 5s linear infinite;
 }
 
 .Suspended {
@@ -64,6 +77,40 @@
     border: solid #e1e8ed;
     border-width: 0 4px 0 3px;
 }
+.menu {
+    color: #e1e8ed;
+    position: absolute;
+    left: 195%;
+    top: -50%;
+}
+.settings {
+    color: #2f95dc;
+    font-size: 1.5em;
+    position: absolute;
+    bottom: 20px;
+}
+.theme {
+    font-weight: 700;
+    border: solid #e1e8ed;
+    font-size: 16px;
+    border-width: 4px 2px 0 0;
+    outline: none;
+    border-top-right-radius: 6px;
+}
+.theme:hover {
+    color: #2f95dc;
+}
+.logout {
+    font-weight: 700;
+    border: solid #e1e8ed;
+    font-size: 16px;
+    border-width: 0 2px 0 0;
+    outline: none;
+}
+.logout:hover {
+    color: #2f95dc;
+}
+
 
 .p {
     border: solid #e1e8ed;
@@ -72,7 +119,6 @@
     font-size: 16px;
     font-weight: 700;
     color: #38444D;
-
 }
 /* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */
 /* #e1e8ed seperator color */
