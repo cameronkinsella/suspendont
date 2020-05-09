@@ -1,4 +1,6 @@
 const express = require('express');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
 
@@ -22,6 +24,13 @@ let db = admin.firestore();
 
 const app = express();
 
+const corsOption = {
+  origin: true,
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  exposedHeaders: ['x-auth-token']
+};
+
 const config = {
   TWITTER: {
     CLIENT_ID: keys.consumer_key,
@@ -31,6 +40,8 @@ const config = {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors(corsOption));
+app.use(cookieParser());
 
 app.post('/auth/request_token', async (req, res) => {
 
@@ -76,7 +87,7 @@ app.post('/auth/access_token', async (req, res) => {
 
   /*
   Required Request Params:
-  redirect_uri
+  oauth_token, oauth_token_secret, oauth_verifier
 
   Description:
   Step 3 for receiving user access token through 3-legged OAuth. See here for details:
@@ -112,7 +123,7 @@ app.post('/auth/access_token', async (req, res) => {
 
   if (response.status !== 200) {
     res.status = response.status;
-    return res.json({ message: "something wrong" })
+    return res.json({ message: "something went wrong!" })
   }
   const text = await response.text();
   return res.json(qs.parse(text))
@@ -129,11 +140,13 @@ app.post('/auth/verify', (req, res) => {
   Used to verify that the user's token is still valid. If successful, returns several user details.
    */
 
+  const client = req.cookies.client;
+
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
-    access_token: req.body.token,
-    access_token_secret: req.body.token_secret
+    access_token: client === 'web' ? req.cookies.token : req.body.token,
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
   };
 
   friends.verifyUser(config)
@@ -156,11 +169,13 @@ app.post('/auth/invalidate_token', (req, res) => {
   Used to invalidate a user's token when requested.
    */
 
+  const client = req.cookies.client;
+
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
-    access_token: req.body.token,
-    access_token_secret: req.body.token_secret
+    access_token: client === 'web' ? req.cookies.token : req.body.token,
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
   };
 
   friends.invalidateToken(config)
@@ -187,18 +202,21 @@ app.post('/twitter/suspended', (req, res) => {
   to the user's doc in the db.
    */
 
+  const client = req.cookies.client;
+  const user_id = client === 'web' ? req.body.user_id : req.cookies.user_id;
+
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
-    access_token: req.body.token,
-    access_token_secret: req.body.token_secret
+    access_token: client === 'web' ? req.cookies.token : req.body.token,
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
   };
 
-  friends.storeNames(config, { user_id: req.body.user_id })
+  friends.storeNames(config, { user_id: user_id })
     .then((data) => {
       //console.log(req.body.stored_data)
-      const userDocRef = db.collection('users').doc(req.body.user_id);
-      const suspendedDocRef = db.collection('suspended').doc(req.body.user_id);
+      const userDocRef = db.collection('users').doc(user_id);
+      const suspendedDocRef = db.collection('suspended').doc(user_id);
 
       const getDoc = userDocRef.get()
         .then((doc) => {
@@ -211,7 +229,7 @@ app.post('/twitter/suspended', (req, res) => {
           } else {
             friends.suspensionCheck(config, { storedData: doc.data(), newData: data })
               .then((suspendedData) => {
-                res.json(qs.parse(suspendedData));
+
                 const setData = userDocRef.set({
                   screen_name: data.screen_name,
                   profile_pic: data.profile_pic,
@@ -219,17 +237,28 @@ app.post('/twitter/suspended', (req, res) => {
                 });
                 const setSuspendedDoc = suspendedDocRef.get()
                   .then((doc) => {
+
                     if (!doc.exists) {
-                      const setData = suspendedDocRef.arrayUnion({
-                        suspendedUsers: suspendedData.suspendedUsers,
-                        deletedUsers: suspendedData.deletedUsers
+                      const setData = suspendedDocRef.set({
+                        suspendedUsers: suspendedData.suspended,
+                        deletedUsers: suspendedData.deleted
                       })
                     } else {
-                      const updateSuspendedDoc = suspendedDocRef.update({
-                        suspendedUsers: db.FieldValue.arrayUnion(suspendedData.suspendedUsers),
-                        deletedUsers: db.FieldValue.arrayUnion(suspendedData.deletedUsers)
-                      })
+                      const args = {};
+                      if (suspendedData.suspended.length >= 1) {
+                        args.suspendedUsers = admin.firestore.FieldValue.arrayUnion(...suspendedData.suspended)
+                      }
+                      if (suspendedData.deleted.length >= 1) {
+                        args.deletedUsers = admin.firestore.FieldValue.arrayUnion(...suspendedData.deleted)
+                      }
+
+                      const updateSuspendedDoc = suspendedDocRef.update(args);
+
+                      res.json(qs.parse(suspendedData));
                     }
+                  })
+                  .catch((err) => {
+                    res.json(err)
                   });
               })
               .catch((err) => {

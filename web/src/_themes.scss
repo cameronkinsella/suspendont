@@ -1,0 +1,34 @@
+$themes: (
+        default: (
+                primary: #2f95dc,
+                background: #ffffff,
+                background2: #ffffff,
+                border: #e1e8ed,
+                fontPrimary: #38444d
+        ),
+        dark: (
+                primary: #2f95dc,
+                background: #15212b,
+                background2: #1b2938,
+                border: #10171e,
+                fontPrimary: #ffffff
+        ),
+);
+
+@mixin themed() {
+  @each $theme, $map in $themes {
+    .theme--#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), '#{$key}');
+        $theme-map: map-merge($theme-map, ($key: $value)) !global;
+      }
+      @content;
+      $theme-map: null !global;
+    }
+  }
+}
+
+@function t($key) {
+  @return map-get($theme-map, $key);
+}

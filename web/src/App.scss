@@ -1,124 +1,235 @@
-@keyframes spin{
-    0%{
-        transform: rotateZ(0);
-    }
-    100% {
-        transform: rotateZ(360deg);
-    }
+@import 'themes';
+
+@keyframes spin {
+  0% {
+    transform: rotateZ(0);
+  }
+  100% {
+    transform: rotateZ(360deg);
+  }
 }
 
 .app {
-    background-color: #ffffff;
-    transition: background-color 0.25s ease-out;
-    display: flex;
-    flex-direction: row;
-}
-.dark-mode {
-    background-color: #10171e;
-    transition: background-color 0.25s ease-in;
-    color: #e1e8ed;
+  transition: background-color 0.25s ease-out;
+  display: flex;
+  flex-direction: row;
+  @include themed() {
+    background-color: t('background');
+  }
 }
 
 .sidebar {
-    width: 60px;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #1B2938;
-    padding-top: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+  transition: background-color 0.25s ease-out;
+  width: 60px;
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  @include themed() {
+    background-color: t('background2');
+  }
 }
 
 .columns {
-    display: flex;
-    flex: 1;
-    height: 100vh;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex: 1;
+  height: 100vh;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
+
 /* fontAwesomeIcons */
 .Twitter {
-    color: #2f95dc;
-    position: relative;
-    font-size: 1.5em;
-
+  color: #2f95dc;
+  position: relative;
+  font-size: 1.5em;
 }
 
 .cog {
-
+  &:hover {
+    color: #91DCF5;
+  }
 }
 
-.cog:hover {
-    color: #91DCF5;
-    animation: spin 5s linear infinite;
+.active {
+  animation: spin 5s linear infinite;
 }
 
 .Suspended {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 50%;
-    height: 100%;
-    text-align: center;
-    border: solid #e1e8ed;
-    border-width: 0 3px 0 4px;
+  transition: border 0.25s ease-out;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  border-width: 0 3px 0 4px;
+  @include themed() {
+    border: solid t('border');
+  }
 }
 
 .Deleted {
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    width: 50%;
-    height: 100%;
-    text-align: center;
-    border: solid #e1e8ed;
-    border-width: 0 4px 0 3px;
+  transition: border 0.25s ease-out;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  border-width: 0 4px 0 3px;
+  @include themed() {
+    border: solid t('border');
+  }
 }
+
 .menu {
-    color: #e1e8ed;
-    position: absolute;
-    left: 195%;
-    top: -50%;
+  transition: background-color 0.25s ease-out, border 0.25s ease-out;
+  position: absolute;
+  border-radius: 0 12px 12px 0;
+  width: 8em;
+  height: auto;
+  left: 185%;
+  top: -440%;
+  display: flex;
+  flex-direction: column;
+  @include themed() {
+    background-color: t('background2');
+    border: 4px solid t('border');
+  }
 }
+
 .settings {
-    color: #2f95dc;
-    font-size: 1.5em;
-    position: absolute;
-    bottom: 20px;
+  color: #2f95dc;
+  font-size: 1.5em;
+  position: absolute;
+  bottom: 20px;
 }
+
 .theme {
-    font-weight: 700;
-    border: solid #e1e8ed;
-    font-size: 16px;
-    border-width: 4px 2px 0 0;
-    outline: none;
-    border-top-right-radius: 6px;
+  transition: color 0.25s ease-out;
+  padding: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  text-align: center;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  @include themed() {
+    color: t('fontPrimary');
+  }
 }
-.theme:hover {
-    color: #2f95dc;
+
+label {
+  font-weight: 400;
+  min-height: 18px;
+  margin: 4px 0;
+  width: 4em;
+  display: flex;
 }
+
+input {
+  margin-right: 5px;
+}
+
+.checkbox {
+  font-weight: 400;
+  flex-direction: column;
+  margin-top: 6px;
+}
+
 .logout {
-    font-weight: 700;
-    border: solid #e1e8ed;
-    font-size: 16px;
-    border-width: 0 2px 0 0;
-    outline: none;
+  transition: background-color 0.25s ease-out, border 0.25s ease-out, color 0.25s ease-out;
+  padding: 15px;
+  font-weight: 700;
+  border-radius: 0 0 12px 0;
+  font-size: 16px;
+  border-width: 2px 0 0 0;
+  outline: none;
+  @include themed() {
+    border-color: t('border');
+    color: t('fontPrimary');
+    background-color: t('background2');
+  }
 }
+
 .logout:hover {
-    color: #2f95dc;
+  color: #2f95dc;
 }
 
 
-.p {
-    border: solid #e1e8ed;
-    border-width: 0 0 2px 0;
-    padding: 10px 0 10px 0;
-    font-size: 16px;
-    font-weight: 700;
-    color: #38444D;
+.header {
+  transition: border 0.25s ease-out, color 0.25s ease-out;
+  border: solid;
+  border-width: 0 0 3px 0;
+  padding: 10px 0;
+  font-size: 16px;
+  font-weight: 700;
+  @include themed() {
+    color: t('fontPrimary');
+    border-color: t('border');
+  }
 }
+
+.login {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginButton {
+  transition: all 0.25s;
+  height: 300px;
+  width: 300px;
+  border-radius: 400px;
+  border: 4px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5em;
+  flex-direction: column;
+  color: white;
+  &:hover {
+    font-size: 2.8em;
+    height: 320px;
+    width: 320px;
+  }
+  &:active {
+    height: 290px;
+    width: 290px;
+    font-size: 2.4em;
+  }
+}
+
+.loader {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.NotFound {
+  background-color: #ffedef;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 3vmin);
+  color: #eeeeee;
+}
+
+img.NotFound {
+  flex: 1;
+  height: 50%;
+  width: auto;
+}
+
 /* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */
 /* #e1e8ed seperator color */
