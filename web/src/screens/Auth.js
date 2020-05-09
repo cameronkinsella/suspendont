@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import animation from '../assets/loader.json';
 
 export default function Auth() {
-  const [cookies, setCookie] = useCookies([null]);
+  const [cookies, setCookie, removeCookie] = useCookies([null]);
 
   const history = useHistory();
 
@@ -26,6 +26,7 @@ export default function Auth() {
     };
 
     getTwitterAccessToken(params).then(res => {
+      removeCookie('oauth_token_secret');
       setCookie('token', res.oauth_token);
       setCookie('token_secret', res.oauth_token_secret);
       setCookie('user_id', res.user_id);
