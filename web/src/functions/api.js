@@ -2,7 +2,7 @@ function isDev() {
   return !'%NODE_ENV%' || '%NODE_ENV%' === 'development';
 }
 
-const AUTH_BASE_URL = isDev ?
+const AUTH_BASE_URL = isDev() ?
   'http://localhost:5000/suspendont-a09bb/us-central1/app' :
   'https://us-central1-suspendont-a09bb.cloudfunctions.net/app';
 
