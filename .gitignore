@@ -11,8 +11,6 @@ firebase-debug.log*
 # Firebase cache
 .firebase/
 
-# Firebase config
-.firebaserc
 
 # Runtime data
 pids
