@@ -1,5 +1,5 @@
 function isDev() {
-  return !'%NODE_ENV%' || '%NODE_ENV%' === 'development';
+  return !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 }
 
 const AUTH_BASE_URL = isDev() ?
@@ -38,6 +38,7 @@ export async function getTwitterAccessToken(params) {
 }
 
 export async function getVerifyUser(params) {
+  console.log(AUTH_BASE_URL);
   const { token, token_secret } = params;
   const url = `${AUTH_BASE_URL}/auth/verify`;
   const res = await fetch(url, {

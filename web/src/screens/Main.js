@@ -4,11 +4,15 @@ import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { useCookies } from 'react-cookie';
 import React, { useState } from 'react';
 import useOnClickOutside from 'use-onclickoutside';
+import ScrollBar from 'react-perfect-scrollbar';
+import '../scrollbar.scss';
 
 export default function Main(props) {
   const [active, setActive] = useState(false);
   const [showMenu, setMenu] = useState(false);
-  const [,, removeCookie] = useCookies([null]);
+  const [suspended, setSuspended] = useState(props.profile.suspended);
+  const [deleted, setDeleted] = useState(props.profile.deleted);
+  const [, , removeCookie] = useCookies([null]);
 
   const changeMenu = () => {
     setActive(false);
@@ -16,14 +20,13 @@ export default function Main(props) {
   };
 
   const changeTheme = () => {
-    props.setDark(!props.darkMode)
+    props.setDark(!props.darkMode);
   };
 
   const handleLogout = () => {
-    console.log('x');
     const cookieList = ['user_id', 'oauth_token_secret', 'token', 'token_secret'];
     for (let i = 0; i < cookieList.length; i++) removeCookie(cookieList[i]);
-    window.location.reload()
+    window.location.reload();
   };
 
   const ref = React.useRef(null);
@@ -33,6 +36,7 @@ export default function Main(props) {
     <div className={'app'}>
       <div className="sidebar">
         <FontAwesomeIcon icon={faTwitter} className="Twitter"/>
+        <img className="profilePic" src={props.profile.profile_pic} alt={`${props.profile.screen_name}'s avatar`}/>
         <div className="settings" ref={ref}>
           <FontAwesomeIcon
             icon={faCog}
@@ -67,11 +71,37 @@ export default function Main(props) {
           <div className="header">
             Suspended
           </div>
+          <ScrollBar component="div" className="scrollView">
+            <div>
+              {
+                suspended && suspended[0]  ?
+                  suspended.map((user, i) => (
+                    <div>{user.screen_name}</div> // TODO replace with card component
+                  )) :
+                  <div>
+                    <img className="emptyImage" src={require('../assets/gavel.png')} alt={''}/>
+                    <p className="emptyText">Nobody has been<br/>suspended yet</p>
+                  </div>
+              }
+            </div>
+          </ScrollBar>
         </div>
-        <div className="Deleted" >
-          <div className="header" >
+        <div className="Deleted">
+          <div className="header">
             Deleted
           </div>
+          <ScrollBar component="div" className="scrollView">
+            {
+              deleted && deleted[0] ?
+                deleted.map((user, i) => (
+                  <div>{user.screen_name}</div> // TODO replace with card component
+                )) :
+                <div>
+                  <img className="emptyImage" src={require('../assets/trash.png')} alt={''}/>
+                  <p className="emptyText">Nobody has been<br/>deleted yet</p>
+                </div>
+            }
+          </ScrollBar>
         </div>
       </div>
     </div>

@@ -33,6 +33,14 @@
   }
 }
 
+.profilePic {
+  margin-top: auto;
+  margin-bottom: 80px;
+  width: 36px;
+  height: 36px;
+  border-radius: 100%;
+}
+
 .columns {
   display: flex;
   flex: 1;
@@ -40,6 +48,14 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+}
+
+.scrollView {
+  overflow-y: scroll;
+  height: 100%;
+  width: 100%;
+  scrollbar-base-color: black;
 }
 
 /* fontAwesomeIcons */
@@ -60,6 +76,7 @@
 }
 
 .Suspended {
+  display: flex;
   transition: border 0.25s ease-out;
   flex-direction: column;
   justify-content: flex-start;
@@ -87,7 +104,18 @@
   }
 }
 
+.emptyImage {
+  padding: 7% 0 2% 0;
+  width: 25%;
+}
+
+.emptyText {
+  color: #c5c5c5;
+  font-size: 4em;
+}
+
 .menu {
+  z-index: 1;
   transition: background-color 0.25s ease-out, border 0.25s ease-out;
   position: absolute;
   border-radius: 0 12px 12px 0;
@@ -165,6 +193,7 @@ input {
 
 
 .header {
+  width: 100%;
   transition: border 0.25s ease-out, color 0.25s ease-out;
   border: solid;
   border-width: 0 0 3px 0;

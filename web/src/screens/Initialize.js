@@ -40,7 +40,7 @@ export default function Initialize() {
     <div className={(darkMode ? 'theme--dark' : 'theme--default')}>
       {
         isAuth ?
-          <Main darkMode={darkMode} setDark={setDarkMode}/> :
+          <Main darkMode={darkMode} setDark={setDarkMode} profile={profile}/> :
           <Login setCookie={setCookie} loading={loading}/>
       }
     </div>
