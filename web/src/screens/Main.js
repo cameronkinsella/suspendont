@@ -1,11 +1,12 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faCog } from '@fortawesome/free-solid-svg-icons';
-import { useCookies } from 'react-cookie';
-import React, { useState } from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faTwitter} from '@fortawesome/free-brands-svg-icons';
+import {faCog} from '@fortawesome/free-solid-svg-icons';
+import {useCookies} from 'react-cookie';
+import React, {useState} from 'react';
 import useOnClickOutside from 'use-onclickoutside';
 import ScrollBar from 'react-perfect-scrollbar';
 import '../scrollbar.scss';
+import Card from "../components/Card";
 
 export default function Main(props) {
   const [active, setActive] = useState(false);
@@ -50,7 +51,7 @@ export default function Main(props) {
             showMenu ?
               <div className="menu">
                 <div className="theme">
-                  <b style={{ marginBottom: '8px' }}>Theme</b>
+                  <b style={{marginBottom: '8px'}}>Theme</b>
                   <label>
                     <input name="theme" type="radio" value="light" checked={!props.darkMode} onChange={changeTheme}/>
                     Light
@@ -74,9 +75,9 @@ export default function Main(props) {
           <ScrollBar component="div" className="scrollView">
             <div>
               {
-                suspended && suspended[0]  ?
+                suspended && suspended[0] ?
                   suspended.map((user, i) => (
-                    <div>{user.screen_name}</div> // TODO replace with card component
+                    <Card user={user} type="suspended" key={i}/>
                   )) :
                   <div>
                     <img className="emptyImage" src={require('../assets/gavel.png')} alt={''}/>

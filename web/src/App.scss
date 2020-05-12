@@ -11,6 +11,7 @@
 
 .app {
   transition: background-color 0.25s ease-out;
+  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   @include themed() {
@@ -19,10 +20,11 @@
 }
 
 .sidebar {
+  position: relative;
   transition: background-color 0.25s ease-out;
   width: 60px;
+  min-width: 60px;
   height: 100vh;
-  overflow: hidden;
   padding-top: 20px;
   display: flex;
   flex-direction: column;
@@ -35,7 +37,7 @@
 
 .profilePic {
   margin-top: auto;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
   width: 36px;
   height: 36px;
   border-radius: 100%;
@@ -48,7 +50,8 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow-y: hidden;
+  min-width: 750px;
 }
 
 .scrollView {
@@ -121,8 +124,8 @@
   border-radius: 0 12px 12px 0;
   width: 8em;
   height: auto;
-  left: 185%;
-  top: -440%;
+  left: 45px;
+  bottom: -19px;
   display: flex;
   flex-direction: column;
   @include themed() {
@@ -134,7 +137,7 @@
 .settings {
   color: #2f95dc;
   font-size: 1.5em;
-  position: absolute;
+  position: relative;
   bottom: 20px;
 }
 
@@ -206,6 +209,64 @@ input {
   }
 }
 
+
+/* profile card */
+
+.card {
+  display: flex;
+  max-width: 900px;
+  height: 161px;
+  border: solid #e1e8ed;
+  border-width: 0 0 3px 0;
+  justify-content: center;
+  align-items: center;
+  @include themed() {
+    border-color: t('border');
+    color: t('fontPrimary');
+    background-color: t('background2');
+  }
+}
+
+.profilePicture {
+  flex-direction: column;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+.textDetail {
+  flex: 1;
+}
+
+.userID {
+  font-size: 20px;
+  padding-bottom: 4px;
+}
+
+.dateBanned {
+  font-size: 13px;
+}
+
+.susPic {
+  flex-direction: column;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-left: auto;
+}
+
+.delPic {
+  flex-direction: column;
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  margin-right: 10px;
+  margin-left: auto;
+}
+
+
 .login {
   height: 100vh;
   display: flex;
@@ -225,11 +286,13 @@ input {
   font-size: 2.5em;
   flex-direction: column;
   color: white;
+
   &:hover {
     font-size: 2.8em;
     height: 320px;
     width: 320px;
   }
+
   &:active {
     height: 290px;
     width: 290px;
@@ -259,6 +322,7 @@ img.NotFound {
   height: 50%;
   width: auto;
 }
+
 
 /* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */
 /* #e1e8ed seperator color */
