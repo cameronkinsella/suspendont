@@ -14,10 +14,9 @@ const admin = require('firebase-admin');
 const friends = require('./twitter');
 const keys = require('./keys.json');
 
-
 admin.initializeApp({
   credential: admin.credential.cert(keys.serviceAccount),
-  databaseURL: keys.databaseURL
+  databaseURL: keys.databaseURL,
 });
 
 let db = admin.firestore();
@@ -28,14 +27,14 @@ const corsOption = {
   origin: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
-  exposedHeaders: ['x-auth-token']
+  exposedHeaders: ['x-auth-token'],
 };
 
 const config = {
   TWITTER: {
     CLIENT_ID: keys.consumer_key,
     CLIENT_SECRET: keys.consumer_secret,
-  }
+  },
 };
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,7 +42,7 @@ app.use(bodyParser.json());
 app.use(cors(corsOption));
 app.use(cookieParser());
 
-app.post('/auth/request_token', async (req, res) => {
+app.post('/auth/request_token', async(req, res) => {
 
   /*
   Required Request Params:
@@ -62,7 +61,7 @@ app.post('/auth/request_token', async (req, res) => {
       secret: config.TWITTER.CLIENT_SECRET,
     },
     signature_method: 'HMAC-SHA1',
-    hash_function: (baseString, key) => Base64.stringify(HmacSHA1(baseString, key))
+    hash_function: (baseString, key) => Base64.stringify(HmacSHA1(baseString, key)),
   });
 
   const request_data = {
@@ -70,20 +69,19 @@ app.post('/auth/request_token', async (req, res) => {
     method: 'POST',
     data: {
       oauth_callback: redirect_uri,
-    }
+    },
   };
 
   const response = await fetch(request_data.url, {
     method: request_data.method,
-    headers: oauth.toHeader(oauth.authorize(request_data))
+    headers: oauth.toHeader(oauth.authorize(request_data)),
   });
 
   const text = await response.text();
-  return res.json(qs.parse(text))
+  return res.json(qs.parse(text));
 });
 
-
-app.post('/auth/access_token', async (req, res) => {
+app.post('/auth/access_token', async(req, res) => {
 
   /*
   Required Request Params:
@@ -102,7 +100,7 @@ app.post('/auth/access_token', async (req, res) => {
       secret: config.TWITTER.CLIENT_SECRET,
     },
     signature_method: 'HMAC-SHA1',
-    hash_function: (baseString, key) => Base64.stringify(HmacSHA1(baseString, key))
+    hash_function: (baseString, key) => Base64.stringify(HmacSHA1(baseString, key)),
   });
 
   const request_data = {
@@ -118,17 +116,16 @@ app.post('/auth/access_token', async (req, res) => {
   const response = await fetch(request_data.url, {
     method: request_data.method,
     data: request_data.data,
-    headers
+    headers,
   });
 
   if (response.status !== 200) {
     res.status = response.status;
-    return res.json({ message: "something went wrong!" })
+    return res.json({ message: 'something went wrong!' });
   }
   const text = await response.text();
-  return res.json(qs.parse(text))
+  return res.json(qs.parse(text));
 });
-
 
 app.post('/auth/verify', (req, res) => {
 
@@ -146,17 +143,24 @@ app.post('/auth/verify', (req, res) => {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
     access_token: client === 'web' ? req.cookies.token : req.body.token,
-    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
   };
 
-  friends.verifyUser(config)
-    .then((data) => {
-      res.json(qs.parse(data))
-    })
-    .catch((err) => {
-      res.send(err);
-      console.log(err)
-    })
+  friends.verifyUser(config).then((data) => {
+    let response = data;
+    if (data.statusCode === 200) {
+      db.collection('suspended').doc(data.user_id).get().then(doc => {
+        if (doc.exists) {
+          response.suspended = doc.data().suspended;
+          response.deleted = doc.data().deleted;
+        }
+        res.json(qs.parse(response));
+      });
+    }
+  }).catch((err) => {
+    res.send(err);
+    console.log(err);
+  });
 });
 
 app.post('/auth/invalidate_token', (req, res) => {
@@ -175,17 +179,15 @@ app.post('/auth/invalidate_token', (req, res) => {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
     access_token: client === 'web' ? req.cookies.token : req.body.token,
-    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
   };
 
-  friends.invalidateToken(config)
-    .then((data) => {
-      res.json({ statusCode: data.resp.statusCode })
-    })
-    .catch((err) => {
-      res.send(err);
-      console.log(err)
-    })
+  friends.invalidateToken(config).then((data) => {
+    res.json({ statusCode: data.resp.statusCode });
+  }).catch((err) => {
+    res.send(err);
+    console.log(err);
+  });
 });
 
 app.post('/twitter/suspended', (req, res) => {
@@ -209,74 +211,66 @@ app.post('/twitter/suspended', (req, res) => {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
     access_token: client === 'web' ? req.cookies.token : req.body.token,
-    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret
+    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
   };
 
-  friends.storeNames(config, { user_id: user_id })
-    .then((data) => {
-      //console.log(req.body.stored_data)
-      const userDocRef = db.collection('users').doc(user_id);
-      const suspendedDocRef = db.collection('suspended').doc(user_id);
+  friends.storeNames(config, { user_id: user_id }).then((data) => {
+    //console.log(req.body.stored_data)
+    const userDocRef = db.collection('users').doc(user_id);
+    const suspendedDocRef = db.collection('suspended').doc(user_id);
 
-      const getDoc = userDocRef.get()
-        .then((doc) => {
-          if (!doc.exists) {
-            const setData = userDocRef.set({
-              screen_name: data.screen_name,
-              profile_pic: data.profile_pic,
-              user_id: data.user_id
-            });
-          } else {
-            friends.suspensionCheck(config, { storedData: doc.data(), newData: data })
-              .then((suspendedData) => {
-
-                const setData = userDocRef.set({
-                  screen_name: data.screen_name,
-                  profile_pic: data.profile_pic,
-                  user_id: data.user_id
-                });
-                const setSuspendedDoc = suspendedDocRef.get()
-                  .then((doc) => {
-
-                    if (!doc.exists) {
-                      const setData = suspendedDocRef.set({
-                        suspendedUsers: suspendedData.suspended,
-                        deletedUsers: suspendedData.deleted
-                      })
-                    } else {
-                      const args = {};
-                      if (suspendedData.suspended.length >= 1) {
-                        args.suspendedUsers = admin.firestore.FieldValue.arrayUnion(...suspendedData.suspended)
-                      }
-                      if (suspendedData.deleted.length >= 1) {
-                        args.deletedUsers = admin.firestore.FieldValue.arrayUnion(...suspendedData.deleted)
-                      }
-
-                      const updateSuspendedDoc = suspendedDocRef.update(args);
-
-                      res.json(qs.parse(suspendedData));
-                    }
-                  })
-                  .catch((err) => {
-                    res.json(err)
-                  });
-              })
-              .catch((err) => {
-                res.json(err)
-              });
-          }
-        })
-        .catch((err) => {
-          res.send(qs.parse(err));
-          console.log(err)
+    const getDoc = userDocRef.get().then((doc) => {
+      if (!doc.exists) {
+        const setData = userDocRef.set({
+          screen_name: data.screen_name,
+          profile_pic: data.profile_pic,
+          user_id: data.user_id,
         });
+      } else {
+        friends.suspensionCheck(config, { storedData: doc.data(), newData: data }).then((suspendedData) => {
+
+          const setData = userDocRef.set({
+            screen_name: data.screen_name,
+            profile_pic: data.profile_pic,
+            user_id: data.user_id,
+          });
+          const setSuspendedDoc = suspendedDocRef.get().then((doc) => {
+
+            if (!doc.exists) {
+              const setData = suspendedDocRef.set({
+                suspended: suspendedData.suspended,
+                deleted: suspendedData.deleted,
+              });
+            } else {
+              const args = {};
+              if (suspendedData.suspended.length >= 1) {
+                args.suspended = admin.firestore.FieldValue.arrayUnion(...suspendedData.suspended);
+              }
+              if (suspendedData.deleted.length >= 1) {
+                args.deleted = admin.firestore.FieldValue.arrayUnion(...suspendedData.deleted);
+              }
+
+              const updateSuspendedDoc = suspendedDocRef.update(args);
+
+              res.json(qs.parse(suspendedData));
+            }
+          }).catch((err) => {
+            res.json(err);
+          });
+        }).catch((err) => {
+          res.json(err);
+        });
+      }
     }).catch((err) => {
-    console.log(err)
-  })
+      res.send(qs.parse(err));
+      console.log(err);
+    });
+  }).catch((err) => {
+    console.log(err);
+  });
 });
 
 exports.app = functions.https.onRequest(app);
-
 
 /*
 app.post('/twitter/names', (req, res) => {
