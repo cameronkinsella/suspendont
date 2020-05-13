@@ -24,7 +24,7 @@ export async function getTwitterRequestToken() {
 }
 
 export async function getTwitterAccessToken(params) {
-  const { oauth_token, oauth_token_secret, oauth_verifier } = params;
+  const {oauth_token, oauth_token_secret, oauth_verifier} = params;
   const url = `${AUTH_BASE_URL}/auth/access_token`;
   const res = await fetch(url, {
     method: 'POST',
@@ -32,14 +32,14 @@ export async function getTwitterAccessToken(params) {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ oauth_token, oauth_token_secret, oauth_verifier })
+    body: JSON.stringify({oauth_token, oauth_token_secret, oauth_verifier})
   });
   return await res.json();
 }
 
 export async function getVerifyUser(params) {
   console.log(AUTH_BASE_URL);
-  const { token, token_secret } = params;
+  const {token, token_secret} = params;
   const url = `${AUTH_BASE_URL}/auth/verify`;
   const res = await fetch(url, {
     method: 'POST',

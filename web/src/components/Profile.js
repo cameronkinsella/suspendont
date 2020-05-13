@@ -15,17 +15,17 @@ export default function Profile(props) {
     <div className="profile" onClick={e => e.stopPropagation()}>
       <a className="profileBanner"
          href={`https://twitter.com/${props.profile.screen_name}`}
-         style={{ backgroundImage: `url(${bannerSrc()})` }}
+         style={{backgroundImage: `url(${bannerSrc()})`}}
       >
         <div className="profileBannerOverlay"/>
         <div className="profileBannerContent">
           <img className="profilePic" src={props.profile.profile_pic}
                alt={`${props.profile.screen_name}'s avatar`}
           />
-          <strong className="profileStrongText" style={{ fontSize: '24px' }}>
+          <strong className="profileStrongText" style={{fontSize: '24px'}}>
             {props.profile.name}
           </strong>
-          <strong className="profileStrongText" style={{ fontSize: '18px' }}>
+          <strong className="profileStrongText" style={{fontSize: '18px'}}>
             @{props.profile.screen_name}
           </strong>
         </div>

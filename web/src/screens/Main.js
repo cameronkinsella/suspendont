@@ -6,7 +6,7 @@ import React, {useState} from 'react';
 import useOnClickOutside from 'use-onclickoutside';
 import ScrollBar from 'react-perfect-scrollbar';
 import Profile from '../components/Profile';
-import Card from "../components/Card";
+import Card from '../components/Card';
 import '../scrollbar.scss';
 
 export default function Main(props) {
@@ -44,8 +44,8 @@ export default function Main(props) {
         {
           showProfile ?
             <span className="backgroundBlur" onClick={() => setProfile(!showProfile)}>
-              <Profile profile={props.profile} />
-            </span>:
+              <Profile profile={props.profile}/>
+            </span> :
             null
         }
         <div className="settings" ref={ref}>

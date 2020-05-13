@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+import React, {useEffect} from 'react';
+import {useCookies} from 'react-cookie';
 import Lottie from '../components/Lottie';
-import { getTwitterAccessToken } from '../functions/api';
-import { useHistory } from 'react-router-dom';
+import {getTwitterAccessToken} from '../functions/api';
+import {useHistory} from 'react-router-dom';
 import animation from '../assets/loader.json';
 
 export default function Auth() {
@@ -17,7 +17,7 @@ export default function Auth() {
     ) || [];
 
     if (oauthToken === undefined || cookies.oauth_token_secret === undefined || oauthVerifier === undefined)
-      window.location.replace(window.origin);
+      history.push('/');
 
     const params = {
       oauth_token: oauthToken,
@@ -30,7 +30,7 @@ export default function Auth() {
       setCookie('token', res.oauth_token);
       setCookie('token_secret', res.oauth_token_secret);
       setCookie('user_id', res.user_id);
-      history.push('/');
+
     });
   });
 
@@ -45,11 +45,11 @@ export default function Auth() {
 
   return (
     <div className="loader">
-    <Lottie
-      options={defaultOptions}
-      height={400}
-      width={400}
-    />
+      <Lottie
+        options={defaultOptions}
+        height={400}
+        width={400}
+      />
     </div>
   );
 }

@@ -50,6 +50,7 @@
   width: 36px;
   height: 36px;
   border-radius: 100%;
+
   &:hover {
     filter: opacity(0.75);
   }
@@ -109,7 +110,7 @@
   width: 520px;
   height: 200px;
   bottom: 0;
-  background-image: linear-gradient(transparent,rgba(20,23,26,.55));
+  background-image: linear-gradient(transparent, rgba(20, 23, 26, .55));
 }
 
 .profileBannerContent {
@@ -123,7 +124,7 @@
 .profileStrongText {
   color: white;
   text-align: center;
-  text-shadow: 0 1px 1px rgba(20,23,26,.8);
+  text-shadow: 0 1px 1px rgba(20, 23, 26, .8);
   margin-bottom: 5px;
 }
 
@@ -323,6 +324,7 @@ input {
   flex-direction: column;
   height: 100px;
   width: 100px;
+  border: solid 2px #2f95dc;
   border-radius: 50%;
   margin: 0 5%;
 }
@@ -405,6 +407,24 @@ img.NotFound {
   height: 50%;
   width: auto;
 }
+
+/* Reload page */
+
+.pleaseWait {
+
+}
+.reload {
+
+}
+.returnMain {
+
+  @include themed() {
+    border-color: t('border');
+    color: t('fontPrimary');
+    background-color: t('background2');
+  }
+}
+
 
 
 /* light color scheme (#83858A darks) Twitter blue #2f95dc, white #fff, light grey #ccc */

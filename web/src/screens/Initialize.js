@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import '../App.scss';
-import { useCookies } from 'react-cookie';
+import {useCookies} from 'react-cookie';
 import authCheck from '../functions/authCheck';
 import Main from './Main';
 import Login from './Login';
@@ -25,12 +25,12 @@ export default function Initialize() {
 
   useEffect(() => {
     localStorage.setItem('theme', JSON.stringify(darkMode));
-    const getAuthState = async() => {
+    const getAuthState = async () => {
       if (!isAuth) {
         await setAuth(await authCheck(cookies, setCookie, setProfile));
       }
     };
-    setCookie('client', 'web', { path: '/' });
+    setCookie('client', 'web', {path: '/'});
     getAuthState().then(() => {
       setLoading(false)
     });
