@@ -13,7 +13,7 @@ export default function Card(props) {
         <img className="profilePicture" src={props.user.profile_pic} alt="profilepic"/>
       </div>
       <div className="textDetail">
-        <div className="userID">@{props.user.screen_name}</div>
+        <div className="userId">@{props.user.screen_name}</div>
         <div className="dateBanned">{props.user.date}</div>
       </div>
       <img className="susPic"

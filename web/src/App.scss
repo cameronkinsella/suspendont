@@ -9,6 +9,15 @@
   }
 }
 
+@keyframes fadeInOpacity {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .app {
   transition: background-color 0.25s ease-out;
   overflow-y: hidden;
@@ -35,12 +44,97 @@
   }
 }
 
-.profilePic {
+.profileButton {
+  cursor: pointer;
   margin-top: auto;
   margin-bottom: 60px;
   width: 36px;
   height: 36px;
   border-radius: 100%;
+  &:hover {
+    filter: opacity(0.75);
+  }
+}
+
+.profilePic {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  border: solid 2px white;
+  margin-bottom: 10px;
+}
+
+.backgroundBlur {
+  animation: fadeInOpacity 0.25s;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  height: 100%;
+  width: 100%;
+  backdrop-filter: blur(5px);
+  background-color: #01223770;
+}
+
+.profile {
+  height: 430px;
+  width: 520px;
+  border-radius: 100px;
+  border: solid 4px;
+  @include themed() {
+    background-color: t('background2');
+    border-color: t('border');
+  }
+}
+
+.profileBanner {
+  position: relative;
+  height: 260px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100px 100px 0 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  text-decoration: none;
+}
+
+.profileBannerOverlay {
+  position: absolute;
+  width: 520px;
+  height: 200px;
+  bottom: 0;
+  background-image: linear-gradient(transparent,rgba(20,23,26,.55));
+}
+
+.profileBannerContent {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.profileStrongText {
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(20,23,26,.8);
+  margin-bottom: 5px;
+}
+
+.profileFollowingCount {
+  text-align: center;
+  font-size: 36px;
+  font-weight: 200;
+  @include themed {
+    color: t('fontPrimary');
+  }
 }
 
 .columns {
@@ -51,7 +145,7 @@
   justify-content: center;
   align-items: center;
   overflow-y: hidden;
-  min-width: 750px;
+  min-width: 1200px;
 }
 
 .scrollView {
@@ -214,7 +308,6 @@ input {
 
 .card {
   display: flex;
-  max-width: 900px;
   height: 161px;
   border: solid #e1e8ed;
   border-width: 0 0 3px 0;
@@ -232,20 +325,21 @@ input {
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  margin-left: 5px;
+  margin: 0 5%;
 }
 
 .textDetail {
   flex: 1;
 }
 
-.userID {
-  font-size: 20px;
+.userId {
+  font-size: 36px;
+  font-weight: 300;
   padding-bottom: 4px;
 }
 
 .dateBanned {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .susPic {
@@ -253,17 +347,7 @@ input {
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  margin-right: 10px;
-  margin-left: auto;
-}
-
-.delPic {
-  flex-direction: column;
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-  margin-right: 10px;
-  margin-left: auto;
+  margin: 0 3%;
 }
 
 
