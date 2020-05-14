@@ -10,8 +10,8 @@ jobs:
       - checkout:
           path: ~/suspendont
       - node/with-cache:
-          cache-version: v5
-          dir: ~/suspendont/web
+          cache-version: v7
+          dir: ~/suspendont/web/node_modules
           steps:
             - run: yarn install
       - run: yarn build
@@ -27,8 +27,8 @@ jobs:
       - node/install-node:
           version: 10.20.1
       - node/with-cache:
-          cache-version: v6
-          dir: ~/suspendont/functions
+          cache-version: v8
+          dir: ~/suspendont/functions/node_modules
           steps:
             - run: yarn install
       - run: echo "$KEYS" | base64 --decode > keys.json
