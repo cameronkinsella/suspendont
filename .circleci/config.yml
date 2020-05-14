@@ -2,27 +2,42 @@ version: 2.1
 orbs:
   node: circleci/node@1.1.6
 jobs:
-  build:
+  deploy-web:
     working_directory: ~/suspendont/web
     executor:
       name: node/default
     steps:
-      - checkout
+      - checkout:
+          path: ~/suspendont
       - node/with-cache:
+          cache-version: v2
+          dir: ~/suspendont/web
           steps:
             - run: yarn install
-            - run: yarn build
-  deploy:
-    working_directory: ~/suspendont
+      - run: yarn build
+      - run: ./node_modules/.bin/firebase deploy --token "$FIREBASE_TOKEN" --only hosting
+
+  deploy-functions:
+    working_directory: ~/suspendont/functions
     executor:
       name: node/default
     steps:
-      - checkout
+      - checkout:
+          path: ~/suspendont
+      - node/install-node:
+          version: 10.20.1
       - node/with-cache:
+          cache-version: v3
+          dir: ~/suspendont/functions
           steps:
-            - run: ./web/node_modules/.bin/firebase deploy --token "$FIREBASE_TOKEN"
+            - run: yarn install
+      - run: echo "$KEYS" | base64 --decode > keys.json
+      - run: ./node_modules/.bin/firebase deploy --token "$FIREBASE_TOKEN" --only functions
+
 workflows:
-  build-and-deploy:
+  deploy-all:
     jobs:
-      - build
-      - deploy
+      - deploy-web:
+          context: Firebase
+      - deploy-functions:
+          context: Firebase
