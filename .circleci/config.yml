@@ -27,7 +27,7 @@ jobs:
       - node/install-node:
           version: 10.20.1
       - node/with-cache:
-          cache-version: v3
+          cache-version: v4
           dir: ~/suspendont/functions
           steps:
             - run: yarn install

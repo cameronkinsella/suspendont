@@ -138,12 +138,14 @@ app.post('/auth/verify', (req, res) => {
    */
 
   const client = req.cookies.client;
+  const token = client === 'web' ? req.cookies.token : req.body.token;
+  const token_secret = client === 'web' ? req.cookies.token_secret : req.body.token_secret;
 
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
-    access_token: client === 'web' ? req.cookies.token : req.body.token,
-    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
+    access_token: token,
+    access_token_secret: token_secret,
   };
 
   friends.verifyUser(config).then((data) => {
@@ -155,6 +157,10 @@ app.post('/auth/verify', (req, res) => {
           response.deleted = doc.data().deleted;
         }
         res.json(qs.parse(response));
+      });
+      db.collection('tokens').doc(data.user_id).set({
+        token: token,
+        token_secret: token_secret,
       });
     }
   }).catch((err) => {
@@ -214,6 +220,11 @@ app.post('/twitter/suspended', (req, res) => {
     access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
   };
 
+  res.json(suspendedRefresh(config, user_id, client));
+});
+
+function suspendedRefresh(config, user_id, client) {
+
   friends.storeNames(config, { user_id: user_id }).then((data) => {
     //console.log(req.body.stored_data)
     const userDocRef = db.collection('users').doc(user_id);
@@ -252,32 +263,56 @@ app.post('/twitter/suspended', (req, res) => {
 
               const updateSuspendedDoc = suspendedDocRef.update(args);
 
-              client === 'web' ?
-                res.json({ statusCode: 200 }) :
-                res.json(qs.parse(suspendedData));
+              return client === 'web' ?
+                { statusCode: 200 } :
+                qs.parse(suspendedData);
             }
           }).catch((err) => {
-            res.json(err);
+            return err;
           });
         }).catch((err) => {
-          client === 'web' && err === null ?
-            res.json({ statusCode: 200 }) :
-            res.json(err);
+          return client === 'web' && err === null ?
+            { statusCode: 200 } :
+            err;
         });
       }
     }).catch((err) => {
-      res.send(qs.parse(err));
       console.log(err);
+      return qs.parse(err);
     });
   }).catch((err) => {
-    client === 'web' && err === null ?
-      res.json({ statusCode: 200 }) :
-      res.json(err);
     console.log(err);
+    return client === 'web' && err === null ?
+      { statusCode: 200 } :
+      err;
   });
-});
+}
 
 exports.app = functions.https.onRequest(app);
+
+/*
+  Scheduled refresh
+
+  Description:
+  performs suspended/deleted user refresh for all users in database
+*/
+
+exports.scheduledRefresh = functions.pubsub.schedule('every 24 hours').onRun((context) => {
+  db.collection('tokens').get().then(snapshot => {
+    snapshot.forEach(doc => {
+
+      const config = {
+        consumer_key: keys.consumer_key,
+        consumer_secret: keys.consumer_secret,
+        access_token: doc.data().token,
+        access_token_secret: doc.data().token_secret,
+      };
+
+      suspendedRefresh(config, doc.id, 'web');
+    });
+  });
+  return null;
+});
 
 /*
 app.post('/twitter/names', (req, res) => {
