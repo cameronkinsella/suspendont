@@ -1,0 +1,28 @@
+version: 2.1
+orbs:
+  node: circleci/node@1.1.6
+jobs:
+  build:
+    working_directory: ~/suspendont/web
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: yarn install
+            - run: yarn build
+  deploy:
+    working_directory: ~/suspendont
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: ./web/node_modules/.bin/firebase deploy --token "$FIREBASE_TOKEN"
+workflows:
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy
