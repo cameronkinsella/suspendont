@@ -18,7 +18,7 @@ theme
 
 export default function Initialize() {
   const [darkMode, setDarkMode] = useState(getInitialMode());
-  const [isAuth, setAuth] = useState(false);
+  const [isAuth, setAuth] = useState(0); // 0 = false, 1 = true, 429 = rate limit API error
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({});
   const [cookies, setCookie] = useCookies(['token']);
@@ -26,7 +26,7 @@ export default function Initialize() {
   useEffect(() => {
     localStorage.setItem('theme', JSON.stringify(darkMode));
     const getAuthState = async () => {
-      if (!isAuth) {
+      if (isAuth === 0) {
         await setAuth(await authCheck(cookies, setCookie, setProfile));
       }
     };
@@ -39,9 +39,9 @@ export default function Initialize() {
   return (
     <div className={(darkMode ? 'theme--dark' : 'theme--default')}>
       {
-        isAuth ?
+        isAuth === 1 ?
           <Main darkMode={darkMode} setDark={setDarkMode} profile={profile}/> :
-          <Login setCookie={setCookie} loading={loading}/>
+          <Login setCookie={setCookie} loading={loading} error={isAuth === 429}/>
       }
     </div>
   );

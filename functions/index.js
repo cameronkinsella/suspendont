@@ -205,7 +205,7 @@ app.post('/twitter/suspended', (req, res) => {
    */
 
   const client = req.cookies.client;
-  const user_id = client === 'web' ? req.body.user_id : req.cookies.user_id;
+  const user_id = client === 'web' ? req.cookies.user_id : req.body.user_id;
 
   const config = {
     consumer_key: keys.consumer_key,
@@ -252,13 +252,17 @@ app.post('/twitter/suspended', (req, res) => {
 
               const updateSuspendedDoc = suspendedDocRef.update(args);
 
-              res.json(qs.parse(suspendedData));
+              client === 'web' ?
+                res.json({ statusCode: 200 }) :
+                res.json(qs.parse(suspendedData));
             }
           }).catch((err) => {
             res.json(err);
           });
         }).catch((err) => {
-          res.json(err);
+          client === 'web' && err === null ?
+            res.json({ statusCode: 200 }) :
+            res.json(err);
         });
       }
     }).catch((err) => {
@@ -266,6 +270,9 @@ app.post('/twitter/suspended', (req, res) => {
       console.log(err);
     });
   }).catch((err) => {
+    client === 'web' && err === null ?
+      res.json({ statusCode: 200 }) :
+      res.json(err);
     console.log(err);
   });
 });

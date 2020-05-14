@@ -1,20 +1,24 @@
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faTwitter} from '@fortawesome/free-brands-svg-icons';
-import {faCog} from '@fortawesome/free-solid-svg-icons';
-import {useCookies} from 'react-cookie';
-import React, {useState} from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faCog, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import { useCookies } from 'react-cookie';
+import React, { useState } from 'react';
 import useOnClickOutside from 'use-onclickoutside';
 import ScrollBar from 'react-perfect-scrollbar';
 import Profile from '../components/Profile';
 import Card from '../components/Card';
 import '../scrollbar.scss';
+import { getTwitterSuspended } from '../functions/api';
+import Refresh from '../components/Refresh';
 
 export default function Main(props) {
   const [active, setActive] = useState(false);
   const [showMenu, setMenu] = useState(false);
   const [showProfile, setProfile] = useState(false);
-  const [suspended, setSuspended] = useState(props.profile.suspended);
-  const [deleted, setDeleted] = useState(props.profile.deleted);
+  const [suspended] = useState(props.profile.suspended);
+  const [deleted] = useState(props.profile.deleted);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [, , removeCookie] = useCookies([null]);
 
   const changeMenu = () => {
@@ -32,6 +36,17 @@ export default function Main(props) {
     window.location.reload();
   };
 
+  const handleRefresh = () => {
+    setLoading(true);
+    getTwitterSuspended().then(code => {
+      if (code === 429) {
+        setError(true)
+      } else {
+        window.location.reload()
+      }
+    })
+  };
+
   const ref = React.useRef(null);
   useOnClickOutside(ref, changeMenu);
 
@@ -39,14 +54,22 @@ export default function Main(props) {
     <div className={'app'}>
       <div className="sidebar">
         <FontAwesomeIcon icon={faTwitter} className="Twitter"/>
+        <FontAwesomeIcon icon={faSyncAlt} className="sync" onClick={handleRefresh}/>
+        {
+          loading &&
+          <span className="backgroundBlur" onClick={() => {
+            if (error) setLoading(false); setError(false);
+          }}>
+            <Refresh error={error} darkMode={props.darkMode}/>
+          </span>
+        }
         <img className="profileButton" onClick={() => setProfile(!showProfile)}
              src={props.profile.profile_pic} alt={`${props.profile.screen_name}'s avatar`}/>
         {
-          showProfile ?
+          showProfile &&
             <span className="backgroundBlur" onClick={() => setProfile(!showProfile)}>
               <Profile profile={props.profile}/>
-            </span> :
-            null
+            </span>
         }
         <div className="settings" ref={ref}>
           <FontAwesomeIcon
@@ -58,10 +81,10 @@ export default function Main(props) {
             }}
           />
           {
-            showMenu ?
+            showMenu &&
               <div className="menu">
                 <div className="theme">
-                  <b style={{marginBottom: '8px'}}>Theme</b>
+                  <b style={{ marginBottom: '8px' }}>Theme</b>
                   <label>
                     <input name="theme" type="radio" value="light" checked={!props.darkMode} onChange={changeTheme}/>
                     Light
@@ -72,8 +95,7 @@ export default function Main(props) {
                   </label>
                 </div>
                 <button className="logout" onClick={handleLogout}><b>Log out</b></button>
-              </div> :
-              null
+              </div>
           }
         </div>
       </div>

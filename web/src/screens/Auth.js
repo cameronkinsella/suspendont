@@ -3,7 +3,7 @@ import {useCookies} from 'react-cookie';
 import Lottie from '../components/Lottie';
 import {getTwitterAccessToken} from '../functions/api';
 import {useHistory} from 'react-router-dom';
-import animation from '../assets/loader.json';
+import animation from '../assets/loader-white.json';
 
 export default function Auth() {
   const [cookies, setCookie, removeCookie] = useCookies([null]);
@@ -31,6 +31,7 @@ export default function Auth() {
       setCookie('token_secret', res.oauth_token_secret);
       setCookie('user_id', res.user_id);
 
+      history.push('/');
     });
   });
 

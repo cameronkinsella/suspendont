@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {getTwitterRequestToken} from '../functions/api';
 import Lottie from '../components/Lottie';
-import animation from '../assets/loader.json';
+import animation from '../assets/loader-white.json';
 import {faTwitter} from '@fortawesome/free-brands-svg-icons';
+import Refresh from '../components/Refresh';
 
 export default function Login(props) {
+  const [error, setError] = useState(true);
 
   const sendToAuth = async () => {
     const res = await getTwitterRequestToken();
@@ -37,6 +39,12 @@ export default function Login(props) {
         <FontAwesomeIcon style={{marginBottom: '40px'}} icon={faTwitter} size={'3x'}/>
         <b>Log in</b>
       </div>
+      {
+        props.error && error &&
+        <span className="backgroundBlur" onClick={() => setError(false)}>
+          <Refresh error={true} darkMode={false}/>
+        </span>
+      }
     </div>
   );
 

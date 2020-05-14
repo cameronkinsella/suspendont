@@ -38,11 +38,11 @@ export async function getTwitterAccessToken(params) {
 }
 
 export async function getVerifyUser(params) {
-  console.log(AUTH_BASE_URL);
   const {token, token_secret} = params;
   const url = `${AUTH_BASE_URL}/auth/verify`;
   const res = await fetch(url, {
     method: 'POST',
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -53,4 +53,19 @@ export async function getVerifyUser(params) {
     })
   });
   return await res.json();
+}
+
+export async function getTwitterSuspended() {
+  const url = `${AUTH_BASE_URL}/twitter/suspended`;
+  const res = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    }
+  });
+
+  const data = await res.json();
+  return data.statusCode
 }

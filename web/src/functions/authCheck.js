@@ -6,15 +6,17 @@ export default async function authCheck(cookies, setCookies, setState) {
 
   const _verifyUser = async ({token, token_secret}) => {
     const response = await getVerifyUser({token: token, token_secret: token_secret});
-    return response.statusCode !== 200 ? false : _setUserInfo(response);
+
+    if (response.statusCode === 429){ return 429 }
+    return response.statusCode !== 200 ? 0 : _setUserInfo(response);
   };
 
   const _setUserInfo = async (data) => {
     setState(data);
-    setCookies('user_id', data.user_id, {path: '/'});
+    setCookies('__session', data.user_id, {path: '/'});
 
-    return true;
+    return 1;
   };
 
-  return !token ? false : await _verifyUser({token, token_secret});
+  return !token ? 0 : await _verifyUser({token, token_secret});
 }
