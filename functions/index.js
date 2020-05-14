@@ -220,13 +220,20 @@ app.post('/twitter/suspended', (req, res) => {
     access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
   };
 
-  res.json(suspendedRefresh(config, user_id, client));
+  suspendedRefresh(config, user_id, client, res);
 });
 
-function suspendedRefresh(config, user_id, client) {
+function suspendedRefresh(config, user_id, client, option) {
+
+  let res;
+  if (option === null) {
+    res = (x) => {};
+    res.json = (x) => { return null }
+  } else {
+    res = option
+  }
 
   friends.storeNames(config, { user_id: user_id }).then((data) => {
-    //console.log(req.body.stored_data)
     const userDocRef = db.collection('users').doc(user_id);
     const suspendedDocRef = db.collection('suspended').doc(user_id);
 
@@ -263,28 +270,28 @@ function suspendedRefresh(config, user_id, client) {
 
               const updateSuspendedDoc = suspendedDocRef.update(args);
 
-              return client === 'web' ?
-                { statusCode: 200 } :
-                qs.parse(suspendedData);
+              client === 'web' ?
+                res.json({ statusCode: 200 }) :
+                res.json(qs.parse(suspendedData));
             }
           }).catch((err) => {
-            return err;
+            res.json(err);
           });
         }).catch((err) => {
-          return client === 'web' && err === null ?
-            { statusCode: 200 } :
-            err;
+          client === 'web' && err === null ?
+            res.json({ statusCode: 200 }) :
+            res.json(err);
         });
       }
     }).catch((err) => {
+      res.json(qs.parse(err));
       console.log(err);
-      return qs.parse(err);
     });
   }).catch((err) => {
+    client === 'web' && err === null ?
+      res.json({ statusCode: 200 }) :
+      res.json(err);
     console.log(err);
-    return client === 'web' && err === null ?
-      { statusCode: 200 } :
-      err;
   });
 }
 
@@ -308,7 +315,7 @@ exports.scheduledRefresh = functions.pubsub.schedule('every 24 hours').onRun((co
         access_token_secret: doc.data().token_secret,
       };
 
-      suspendedRefresh(config, doc.id, 'web');
+      suspendedRefresh(config, doc.id, 'web', null);
     });
   });
   return null;

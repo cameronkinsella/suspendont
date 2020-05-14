@@ -10,7 +10,7 @@ jobs:
       - checkout:
           path: ~/suspendont
       - node/with-cache:
-          cache-version: v2
+          cache-version: v5
           dir: ~/suspendont/web
           steps:
             - run: yarn install
@@ -27,7 +27,7 @@ jobs:
       - node/install-node:
           version: 10.20.1
       - node/with-cache:
-          cache-version: v4
+          cache-version: v6
           dir: ~/suspendont/functions
           steps:
             - run: yarn install
