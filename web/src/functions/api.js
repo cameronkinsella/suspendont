@@ -55,7 +55,7 @@ export async function getVerifyUser(params) {
   return await res.json();
 }
 
-export async function getTwitterSuspended() {
+export async function getTwitterSuspended(cookies) {
   const url = `${AUTH_BASE_URL}/twitter/suspended`;
   const res = await fetch(url, {
     method: 'POST',
@@ -63,7 +63,13 @@ export async function getTwitterSuspended() {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-    }
+    },
+    body: JSON.stringify({
+      user_id: cookies.user_id,
+      token: cookies.token,
+      token_secret: cookies.token_secret,
+      client: 'web'
+    })
   });
 
   const data = await res.json();

@@ -1,5 +1,7 @@
 import {getVerifyUser} from './api';
 
+// 0 = false, 1 = true, 429 = rate limit API error
+
 export default async function authCheck(cookies, setCookies, setState) {
   const token = cookies.token;
   const token_secret = cookies.token_secret;
@@ -13,8 +15,6 @@ export default async function authCheck(cookies, setCookies, setState) {
 
   const _setUserInfo = async (data) => {
     setState(data);
-    setCookies('__session', data.user_id, {path: '/'});
-
     return 1;
   };
 

@@ -19,7 +19,7 @@ export default function Main(props) {
   const [deleted] = useState(props.profile.deleted);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [, , removeCookie] = useCookies([null]);
+  const [cookies, , removeCookie] = useCookies([null]);
 
   const changeMenu = () => {
     setActive(false);
@@ -38,7 +38,7 @@ export default function Main(props) {
 
   const handleRefresh = () => {
     setLoading(true);
-    getTwitterSuspended().then(code => {
+    getTwitterSuspended(cookies).then(code => {
       if (code === 429) {
         setError(true)
       } else {

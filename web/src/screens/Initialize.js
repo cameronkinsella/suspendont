@@ -18,7 +18,7 @@ theme
 
 export default function Initialize() {
   const [darkMode, setDarkMode] = useState(getInitialMode());
-  const [isAuth, setAuth] = useState(0); // 0 = false, 1 = true, 429 = rate limit API error
+  const [isAuth, setAuth] = useState(0);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({});
   const [cookies, setCookie] = useCookies(['token']);

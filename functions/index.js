@@ -137,9 +137,8 @@ app.post('/auth/verify', (req, res) => {
   Used to verify that the user's token is still valid. If successful, returns several user details.
    */
 
-  const client = req.cookies.client;
-  const token = client === 'web' ? req.cookies.token : req.body.token;
-  const token_secret = client === 'web' ? req.cookies.token_secret : req.body.token_secret;
+  const token = req.body.token;
+  const token_secret = req.body.token_secret;
 
   const config = {
     consumer_key: keys.consumer_key,
@@ -165,7 +164,6 @@ app.post('/auth/verify', (req, res) => {
     }
   }).catch((err) => {
     res.send(err);
-    console.log(err);
   });
 });
 
@@ -210,24 +208,22 @@ app.post('/twitter/suspended', (req, res) => {
   to the user's doc in the db.
    */
 
-  const client = req.cookies.client;
-  const user_id = client === 'web' ? req.cookies.user_id : req.body.user_id;
-
+  const user_id = req.body.user_id;
   const config = {
     consumer_key: keys.consumer_key,
     consumer_secret: keys.consumer_secret,
-    access_token: client === 'web' ? req.cookies.token : req.body.token,
-    access_token_secret: client === 'web' ? req.cookies.token_secret : req.body.token_secret,
+    access_token: req.body.token,
+    access_token_secret: req.body.token_secret,
   };
 
-  suspendedRefresh(config, user_id, client, res);
+  suspendedRefresh(config, user_id, req.body.client, res);
 });
 
 function suspendedRefresh(config, user_id, client, option) {
 
   let res;
   if (option === null) {
-    res = (x) => {};
+    res = () => {};
     res.json = (x) => { return null }
   } else {
     res = option
