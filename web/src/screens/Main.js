@@ -127,7 +127,7 @@ export default function Main(props) {
             {
               deleted && deleted[0] ?
                 deleted.map((user, i) => (
-                  <div>{user.screen_name}</div> // TODO replace with card component
+                  <Card user={user} type="deleted" key={i}/>
                 )) :
                 <div>
                   <img className="emptyImage" src={require('../assets/trash.png')} alt={''}/>
