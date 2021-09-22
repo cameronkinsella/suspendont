@@ -6,11 +6,12 @@ jobs:
     working_directory: ~/suspendont/web
     executor:
       name: node/default
+      tag: "14.17"
     steps:
       - checkout:
           path: ~/suspendont
       - node/with-cache:
-          cache-version: v7
+          cache-version: v8
           dir: ~/suspendont/web/node_modules
           steps:
             - run: yarn install
@@ -21,13 +22,14 @@ jobs:
     working_directory: ~/suspendont/functions
     executor:
       name: node/default
+      tag: "10.20.1"
     steps:
       - checkout:
           path: ~/suspendont
       - node/install-node:
           version: 10.20.1
       - node/with-cache:
-          cache-version: v8
+          cache-version: v9
           dir: ~/suspendont/functions/node_modules
           steps:
             - run: yarn install
