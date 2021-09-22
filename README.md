@@ -14,17 +14,17 @@ There is a mobile and web version, but the mobile app is not available on the Ap
 ## Web App Preview
 
 <p align="center">
-    <img src="https://i.gyazo.com/da2b3ebcda5e7e55ae6b7b05bd5a3f00.gif" alt="preview gif"/>
+    <img src="https://github.com/cameronkinsella/suspendont/images/preview-login.gif" alt="login preview"/>
 </p> <br/>
 
 
 <p align="center">
     Themes!
-    <img src="https://i.gyazo.com/ed8cccad1542d435788c6628206a92dc.gif" alt="themes preview"/>
+    <img src="https://github.com/cameronkinsella/suspendont/images/preview-themes.gif" alt="themes preview"/>
 </p> <br/>
 
 
 <p align="center">
     Easily refresh list and log out
-    <img src="https://i.gyazo.com/896cbdf88b107f4d80d1d2969792d97b.gif" alt="dark/light mode preview"/>
+    <img src="https://github.com/cameronkinsella/suspendont/images/preview-refresh-logout.gif" alt="refresh and logout preview"/>
 </p> <br/>
