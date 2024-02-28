@@ -4,6 +4,10 @@
 
 [![CircleCI](https://circleci.com/gh/cameronkinsella/suspendont.svg?style=svg)](https://circleci.com/gh/cameronkinsella/suspendont)
 
+## ⚠️ Deprecation Notice ⚠️
+
+Due to Twitter's unsustainable API pricing change, Suspendon't is no longer functional.
+
 ## What is it?
 
 Suspendon't tracks when someone you follow on Twitter has been suspended or has deleted their account. 
